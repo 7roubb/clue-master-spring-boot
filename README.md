@@ -81,5 +81,7 @@ Contributions are welcome! Feel free to submit issues or pull requests to help i
 This project is licensed under the MIT License.
 
 ---
+## Figma Design 
+https://www.figma.com/design/8LvN9Ph6ZVit7m1bU1bDkP/ClueMasterDesign?node-id=0-1&node-type=canvas
 
 Enjoy solving mysteries with Clue Master!
