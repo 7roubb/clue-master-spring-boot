@@ -1,0 +1,8 @@
+admin:
+  username: development
+  password: develop1231
+  email: dev@cotede.com
+  phoneNumber: +970594000000
+spring:
+  session:
+    store-type: redis

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Tester</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        #messages { height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
+        input, button { margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+<h1>WebSocket Tester</h1>
+<div>
+    <input type="text" id="roomIds" placeholder="Enter Room IDs (comma separated)">
+    <button onclick="connect()">Connect</button>
+    <button onclick="disconnect()">Disconnect</button>
+</div>
+<div id="messages"></div>
+
+<script>
+    let stompClient = null;
+    const messagesDiv = document.getElementById('messages');
+    let subscriptions = [];
+
+    function connect() {
+        const roomIdsInput = document.getElementById('roomIds').value;
+        const roomIds = roomIdsInput.split(',').map(id => id.trim());
+
+        if (roomIds.length === 0 || roomIds.some(id => !id)) {
+            alert('Please enter valid Room IDs');
+            return;
+        }
+
+        const socket = new SockJS('/ws'); // Replace with your WebSocket URL
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+            // Clear any previous subscriptions
+            subscriptions.forEach(sub => sub.unsubscribe());
+            subscriptions = [];
+
+            roomIds.forEach(roomId => {
+                stompClient.subscribe('/topic/room/' + roomId, function (message) {
+                    showMessage(`Room ${roomId}: ${message.body}`);
+                });
+                stompClient.subscribe('/topic/game/' + roomId, function (message) {
+                    showMessage(`Game ${roomId}: ${message.body}`);
+                });
+
+                showMessage(`Subscribed to room and game for Room ID ${roomId}`);
+            });
+        });
+    }
+
+    function disconnect() {
+        if (stompClient !== null) {
+            stompClient.disconnect();
+            showMessage('Disconnected');
+        }
+        stompClient = null;
+        subscriptions = [];
+    }
+
+    function showMessage(message) {
+        const messageElement = document.createElement('div');
+        messageElement.textContent = message;
+        messagesDiv.appendChild(messageElement);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+</script>
+</body>
+</html>

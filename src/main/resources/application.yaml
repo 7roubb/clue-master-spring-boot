@@ -1,0 +1,56 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: clue-master
+  profiles:
+    active: development
+  app:
+    jwtSecret: ${JWT_SECRET}
+    jwtExpirationMs: ${JWT_EXPIRATION_MS:6000000000000}
+    jwtRefreshExpirationMs: ${JWT_REFRESH_EXPIRATION_MS:400000000}
+
+  messages:
+    basename: i18n/messages
+    encoding: UTF-8
+    fallback-to-system-locale: false
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      username: admin
+      password: ${REDIS_PASSWORD}
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/game_db
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      envers:
+        autoRegisterListeners: true
+        audit_table_prefix: audit_
+        default_schema: changes
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+logging:
+  level:
+    org:
+      springframework:
+        messaging: DEBUG
+        web.socket: DEBUG
+        context:
+          support:
+            ResourceBundleMessageSource: DEBUG
+
+chatgpt:
+  api:
+    url: "https://api.openai.com/v1/chat/completions"
+    key: ${OPENAI_API_KEY}
